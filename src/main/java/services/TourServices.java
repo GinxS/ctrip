@@ -4,6 +4,7 @@ import java.util.List;
 
 import dao.TourDAO;
 import pojo.Comment;
+import pojo.Order;
 import pojo.Tour;
 import pojo.TourDate;
 import pojo.TourFee;
@@ -11,6 +12,7 @@ import pojo.TourImage;
 import pojo.TourInfo;
 import pojo.TourRoute;
 import pojo.TourRule;
+import pojo.Visitor;
 import util.PageUtil;
 
 public class TourServices {
@@ -51,5 +53,19 @@ public class TourServices {
 	public List<Comment> getComment(Integer tour_id){
 		return dao.getComment(tour_id);
 	}
-		
+	public void addTourOrder(Order order){
+		dao.addTourOrder(order);
+	}
+	public void addVisitor(Visitor visitor){
+		dao.addVisitor(visitor);
+	}
+	public int getOrdreCount(){
+		return dao.getOrdreCount();
+	}
+	public void changeOrderState(int order_state,int order_id){
+		dao.changeOrderState(order_state, order_id);
+	}
+	public void addComment(Comment comment){
+		dao.addComment(comment);
+	}
 }

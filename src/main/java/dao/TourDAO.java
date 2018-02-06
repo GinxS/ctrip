@@ -3,11 +3,15 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import pojo.Comment;
 import pojo.Company;
+import pojo.Order;
 import pojo.Tour;
 import pojo.TourDate;
 import pojo.TourFee;
@@ -15,6 +19,7 @@ import pojo.TourImage;
 import pojo.TourInfo;
 import pojo.TourRoute;
 import pojo.TourRule;
+import pojo.Visitor;
 import util.DBHelper;
 import util.PageUtil;
 
@@ -121,9 +126,68 @@ public class TourDAO extends BaseDAO{
 		String sql = "select * from comment where tour_id=?";
 		return super.Query(sql, new Object[]{tour_id},Comment.class);
 	}
+	//获取订单数量
+	public int getOrdreCount(){
+		String sql = "select count(1) from c_order";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int count = 0;
+		try {
+			conn = DBHelper.getConn();
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				count = rs.getInt("count(1)");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return count;
+	}
+	//添加旅游订购单
+	public void addTourOrder(Order order){
+		String sql = "insert into c_order(order_id,start_date,tickets_number,tour_id,order_price,user_name,user_tel,user_email,user_id,order_state) values(?,?,?,?,?,?,?,?,?,1)";
+		super.update(sql, new Object[]{order.getOrder_id(),order.getStart_date(),order.getTickets_number(),order.getTour_id(),order.getOrder_price(),order.getUser_name(),order.getUser_tel(),order.getUser_email(),order.getUser_id()},DBHelper.getConn());
+	}
+	//添加订单游客信息
+	public void addVisitor(Visitor visitor){
+		String sql = "insert into visitor(visitor_name,identity,tel,order_id) values(?,?,?,?)";
+		super.update(sql, new Object[]{visitor.getVisitor_name(),visitor.getIdentity(),visitor.getTel(),visitor.getOrder_id()}, DBHelper.getConn());
+	}
+	//改变订单状态
+	public void changeOrderState(int order_state,int order_id){
+		String sql = "update c_order set order_state = ? where order_id = ? ";
+		super.update(sql, new Object[]{order_state,order_id}, DBHelper.getConn());
+	}
+	//查看全部订单
+	public List<Order> getOrder(int user_id){
+		String sql = "select * from c_order where user_id = ?";
+		return super.Query(sql, new Object[]{user_id}, Order.class);
+	}
+	//查看未出行订单
+	public List<Order> getOrder2(int user_id){
+		String sql = "select * from c_order where user_id = ? and order_state = 2";
+		return super.Query(sql, new Object[]{user_id}, Order.class);
+	}
+	//查看未付款订单
+	public List<Order> getOrder1(int user_id){
+		String sql = "select * from c_order where user_id = ? and order_state = 1";
+		return super.Query(sql, new Object[]{user_id}, Order.class);
+	}
+	//查看未评价订单
+	public List<Order> getOrder3(int user_id){
+		String sql = "select * from c_order where user_id = ? and order_state = 3";
+		return super.Query(sql, new Object[]{user_id}, Order.class);
+	}
+	//添加旅游商品评论
+	public void addComment(Comment comment){
+		String sql = "insert into comment(level,comment_text,comment_date,user_id,tour_id) values(?,?,?,?,?)";
+		super.update(sql, new Object[]{comment.getLevel(),comment.getComment_text(),comment.getComment_date(),comment.getUser_id(),comment.getTour_id()}, DBHelper.getConn());
+	}
 	
 	public static void main(String[] args) {
 		TourDAO dao = new TourDAO();
-		System.out.println(dao.getComment(1));
+		System.out.println(dao.getOrdreCount());
 	}
 }
