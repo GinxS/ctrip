@@ -20,6 +20,7 @@ import services.TourServices;
 import util.PageUtil;
 
 public class BaseController extends HttpServlet{
+	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
